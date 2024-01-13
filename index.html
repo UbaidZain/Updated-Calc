@@ -72,6 +72,7 @@
         outline: none;
         display: flex;
       }
+
       #input:hover,
       #input:focus {
         outline: 1px solid black;
@@ -265,7 +266,6 @@
         percentage() {
           let current = this.currentOperand;
           let prev = parseFloat(this.previousOperand);
-          console.log(current, prev);
 
           prev = parseFloat(prev) / 100;
           this.currentOperand = prev;
@@ -337,11 +337,6 @@
           this.updateDisplay();
         }
 
-        handleEnterKey() {
-          this.compute();
-          this.updateDisplay();
-        }
-
         // New method to handle clicking on display for keyboard input
         handleDisplayClick() {
           this.currentOperandElement.focus();
@@ -391,21 +386,14 @@
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
-          calculator.handleEnterKey();
+          calculator.compute();
+          calculator.updateDisplay();
         }
       });
 
       // New event listener for clicking on the display
       currentOperandElement.addEventListener("click", () => {
         calculator.handleDisplayClick();
-      });
-
-      // New event listener for arrow keys
-      document.addEventListener("keydown", (event) => {
-        const arrowKeys = ["ArrowLeft", "ArrowRight"];
-        if (arrowKeys.includes(event.key)) {
-          calculator.handleArrowKey(event.key);
-        }
       });
 
       currentOperandElement.addEventListener("keydown", (event) => {
@@ -418,6 +406,11 @@
 
         if (!isNaN(key) || key === "." || key === "Decimal") {
           calculator.appendNumber(key === "Decimal" ? "." : key);
+        } else if (["+", "-", "*", "/"].includes(key)) {
+          calculator.chooseOperation(key);
+          calculator.updateDisplay();
+        } else if (key === "Enter") {
+          calculator.handleEnterKey();
         }
       });
 
