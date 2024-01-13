@@ -35,6 +35,7 @@
         display: flex;
         justify-content: baseline;
         text-align: left;
+        overflow: hidden;
       }
       .main {
         width: 95%;
@@ -70,7 +71,7 @@
       }
       #input {
         height: 40px;
-        font-size: 1.5rem;
+        font-size: 25px;
         width: 95%;
         border: 2px solid #dcdbdb;
         border-radius: 4px;
@@ -81,15 +82,14 @@
         color: #000000;
         outline: none;
         display: flex;
+        overflow: hidden;
       }
 
       #input:hover,
       #input:focus {
         outline: 1px solid black;
       }
-      #input::placeholder {
-        color: black;
-      }
+
       .heading {
         background-color: #fbf7f7;
         width: 207px;
@@ -140,46 +140,7 @@
       .btn-clear:focus {
         background-color: rgb(248, 172, 30);
       }
-      @media (max-width: 1200px) {
-      }
-      @media (max-width: 1000px) {
-        .main {
-          width: 15vw;
-        }
-        .top-display {
-          padding: 0.18rem;
-        }
-        .button {
-          width: 25px;
-          height: 20px;
-        }
-        @media (max-width: 960px) {
-          .top-display {
-            padding: 0.1rem;
-          }
-        }
-        @media (max-width: 756px) {
-          .main {
-            width: 18vw;
-          }
-          .top-display {
-            padding: 0.1rem;
-          }
-          .button {
-            height: 17px;
-          }
-        }
-        @media (max-width: 600px) {
-          .main {
-            width: 20vw;
-            min-width: 130px;
-          }
-          .button {
-            height: 18px;
-            font-size: 10px;
-          }
-        }
-      }
+
       .main {
         align-items: center;
       }
@@ -222,7 +183,7 @@
             <button class="button btn-opr data-operation">+</button>
           </div>
           <div class="row flex">
-            <button class="button">0</button>
+            <button class="button data-number">0</button>
             <button class="button" id="sqrt">√</button>
             <button class="button data-number">.</button>
             <button class="button btn-equal data-equals">=</button>
@@ -234,6 +195,7 @@
       const currentOperandElement = document.querySelector(
         ".data-current-operand"
       );
+      console.log(currentOperandElement);
       const previousOperandElement = document.querySelector(
         ".data-previous-operand"
       );
@@ -330,6 +292,8 @@
           const prev = parseFloat(this.previousOperand);
           const current = parseFloat(this.currentOperand);
           if (isNaN(prev) || isNaN(current)) return;
+          topDisplay.innerHTML += this.currentOperandElement.innerText;
+
           switch (this.operation) {
             case "+":
               computation = prev + current;
