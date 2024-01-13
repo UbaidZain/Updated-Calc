@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator</title>
+    <style>
+      body {
+        text-align: center;
+        background-color: white;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+      }
+      .row {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+      .main {
+        margin: 35px;
+        padding: 15px 20px;
+        width: 22vw;
+        border: 2px solid #4e4d4d;
+        border-radius: 1px;
+        background-color: #f5f5f5;
+        box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.2),
+          0 6px 20px 0 rgba(255, 255, 255, 0.19);
+        position: relative;
+      }
+      .button {
+        appearance: none;
+        width: 55px;
+        height: 60px;
+        border-radius: 3px;
+        margin: 4px 2px;
+        font-size: 15px;
+        padding: 2px;
+        background-color: #4e4d4d;
+        color: #f5f5f5;
+        font-weight: 700;
+        border: none;
+      }
+      .button:hover {
+        opacity: 70%;
+        cursor: pointer;
+        background-color: rgb(4, 192, 4);
+      }
+      .button:active {
+        opacity: 50%;
+        cursor: pointer;
+      }
+      #input {
+        height: 40px;
+        font-size: 35px;
+        width: 100%;
+        border: 2px solid #dcdbdb;
+        border-radius: 4px;
+        text-align: right;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        background-color: #f5f5f5;
+        color: #000000;
+        padding: 10px 4px;
+        outline: none;
+      }
+      #input:hover,
+      #input:focus {
+        outline: 1px solid black;
+      }
+      #input::placeholder {
+        color: black;
+      }
+      .heading {
+        background-color: #fbf7f7;
+        width: 207px;
+        height: 50px;
+        margin-bottom: 10px;
+        padding: 8px 0 0;
+        margin-top: 0;
+        border-radius: 5px;
+        color: #130a59;
+      }
+
+      .btn-equal {
+        background-color: rgb(209, 4, 4);
+        color: #feefe5;
+        border: 1px solid #feefe5;
+      }
+
+      .btn-equal:hover {
+        background-color: rgb(209, 4, 4);
+      }
+      .text-center {
+        text-align: center;
+      }
+
+      .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .row {
+        justify-content: space-between;
+      }
+      @media (max-width: 1000px) {
+        .main {
+          width: 25vw;
+        }
+        .button {
+          height: 50px;
+        }
+        @media (max-width: 756px) {
+          .main {
+            width: 30vw;
+          }
+          .button {
+            width: 50px;
+            height: 45px;
+          }
+        }
+        @media (max-width: 600px) {
+          .main {
+            width: 35vw;
+          }
+          .button {
+            width: 45px;
+            height: 25px;
+            font-size: 12px;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flex flex-col">
+      <h1 class="heading">Calculator</h1>
+      <div class="main flex flex-col">
+        <input type="text" id="input" />
+        <div class="row flex">
+          <button class="button btn-clear">AC</button>
+          <button class="button btn-clear">DEL</button>
+          <button class="button btn-opr">%</button>
+          <button class="button btn-opr">/</button>
+        </div>
+        <div class="row flex">
+          <button class="button">7</button>
+          <button class="button">8</button>
+          <button class="button">9</button>
+          <button class="button btn-opr">*</button>
+        </div>
+        <div class="row flex">
+          <button class="button">4</button>
+          <button class="button">5</button>
+          <button class="button">6</button>
+          <button class="button btn-opr">-</button>
+        </div>
+        <div class="row flex">
+          <button class="button">1</button>
+          <button class="button">2</button>
+          <button class="button">3</button>
+          <button class="button btn-opr">+</button>
+        </div>
+        <div class="row flex">
+          <button class="button">0</button>
+          <button class="button" id="sqrt">√</button>
+          <button class="button">.</button>
+          <button class="button btn-equal">=</button>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      let buttons = Array.from(document.getElementsByClassName("button"));
+      let input = document.getElementById("input");
+
+      // Allow mouse click on the input field to focus on it
+      input.addEventListener("click", () => input.focus());
+      document.addEventListener("keydown", (e) => {
+        const key = e.key;
+
+        // Check if the pressed key is a numeric key
+        if (/^\d$/.test(key)) {
+          input.value += key;
+        } else {
+          switch (key) {
+            case "Enter":
+              calculateResult();
+              break;
+            case "ArrowLeft":
+              moveCursor(-1);
+              break;
+            case "ArrowRight":
+              moveCursor(1);
+              break;
+            case "Backspace":
+              deleteCharacter();
+              break;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+              input.value += key;
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      buttons.forEach((button) =>
+        button.addEventListener("click", (e) => handleButtonClick(e))
+      );
+
+      function handleButtonClick(e) {
+        let result = e.target.innerText.trim();
+        switch (result) {
+          case "AC":
+            input.value = "";
+            break;
+          case "DEL":
+            deleteCharacter();
+            break;
+          case "=":
+            calculateResult();
+            break;
+          default:
+            input.value += result;
+            break;
+        }
+      }
+
+      function calculateResult() {
+        try {
+          input.value = eval(input.value);
+        } catch (err) {
+          input.value = "Syntax Error";
+        }
+      }
+
+      function moveCursor(direction) {
+        const cursorPosition = input.selectionStart;
+        input.setSelectionRange(
+          cursorPosition + direction,
+          cursorPosition + direction
+        );
+      }
+
+      function deleteCharacter() {
+        const cursorPosition = input.selectionStart;
+        input.value =
+          input.value.substring(0, cursorPosition - 1) +
+          input.value.substring(cursorPosition);
+        input.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
+      }
+    </script>
+  </body>
+</html>
