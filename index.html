@@ -261,30 +261,11 @@
         }
 
         percentage() {
-          const current = parseFloat(this.currentOperand);
-          const prev = parseFloat(this.previousOperand);
-
-          if (isNaN(current) || isNaN(prev)) return;
-
-          switch (this.operation) {
-            case "+":
-            case "-":
-              this.currentOperand = (prev * current) / 100;
-              break;
-            case "*":
-              this.currentOperand = prev * (current / 100);
-              break;
-            case "÷":
-              this.currentOperand = prev / (current / 100);
-              break;
-            default:
-              console.log("Invalid operation");
-              return;
-          }
-
-          this.operation = undefined;
+          let current = this.currentOperand;
+          let prev = parseFloat(this.previousOperand);
+          prev = parseFloat(prev) / 100;
+          this.currentOperand = prev;
           this.previousOperand = "";
-          console.log("hello");
           this.updateDisplay();
         }
 
