@@ -194,7 +194,7 @@
         <div class="row flex">
           <button class="button">0</button>
           <button class="button" id="sqrt">√</button>
-          <button class="button">.</button>
+          <button class="button data-number">.</button>
           <button class="button btn-equal data-equals">=</button>
         </div>
       </div>
@@ -428,11 +428,11 @@
           calculator.handleEnterKey();
         }
       });
-
       document.addEventListener("keydown", (event) => {
         const key = event.key;
-        if (!isNaN(key) || key === ".") {
-          calculator.appendNumber(key);
+
+        if (!isNaN(key) || key === "." || key === "Decimal") {
+          calculator.appendNumber(key === "Decimal" ? "." : key);
         }
       });
 
