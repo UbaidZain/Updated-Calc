@@ -445,6 +445,11 @@
           calculator.percentage();
         }
       });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Backspace") {
+          calculator.delete();
+        }
+      });
     </script>
   </body>
 </html>
