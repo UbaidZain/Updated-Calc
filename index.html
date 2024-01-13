@@ -83,11 +83,17 @@
         outline: none;
         display: flex;
         overflow: hidden;
+        padding: 0.25rem;
       }
 
       #input:hover,
       #input:focus {
         outline: 1px solid black;
+      }
+      .data-current-operand,
+      .data-previous-operand {
+        display: flex;
+        align-items: center;
       }
 
       .heading {
@@ -159,7 +165,7 @@
           font-weight: 800;
         }
         .top-display {
-          padding: 0.5rem 2.5rem;
+          padding: 0.25rem 2.5rem;
         }
         .button {
           height: 42px;
