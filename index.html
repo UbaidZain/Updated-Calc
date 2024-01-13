@@ -17,24 +17,30 @@
         padding: 0;
         width: 100%;
       }
+      .top-display {
+        border: 1px solid #4e4d4d;
+        height: 20px;
+        width: 40%;
+      }
       .main {
-        margin: 35px;
+        margin: 35px 0;
         padding: 15px 20px;
-        width: 22vw;
+        width: 11vw;
         border: 2px solid #4e4d4d;
         border-radius: 1px;
         background-color: #f5f5f5;
         box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.2),
           0 6px 20px 0 rgba(255, 255, 255, 0.19);
         position: relative;
+        margin-top: 0.5rem;
       }
       .button {
         appearance: none;
-        width: 55px;
-        height: 60px;
+        width: 27px;
+        height: 30px;
         border-radius: 3px;
         margin: 4px 2px;
-        font-size: 15px;
+        font-size: 10px;
         padding: 2px;
         background-color: #4e4d4d;
         color: #f5f5f5;
@@ -61,8 +67,8 @@
         margin-top: 10px;
         background-color: #f5f5f5;
         color: #000000;
-        padding: 10px 4px;
         outline: none;
+        display: flex;
       }
       #input:hover,
       #input:focus {
@@ -81,15 +87,20 @@
         border-radius: 5px;
         color: #130a59;
       }
-
+      .btn-clear {
+        background-color: orange;
+      }
       .btn-equal {
-        background-color: rgb(209, 4, 4);
+        background-color: rgb(253, 54, 54);
         color: #feefe5;
         border: 1px solid #feefe5;
       }
+      .btn-opr {
+        background-color: teal;
+      }
 
       .btn-equal:hover {
-        background-color: rgb(209, 4, 4);
+        background-color: rgb(243, 47, 47);
       }
       .text-center {
         text-align: center;
@@ -102,6 +113,8 @@
       }
       .flex-col {
         flex-direction: column;
+        justify-content: center;
+        align-items: baseline;
       }
       .row {
         justify-content: space-between;
@@ -137,123 +150,294 @@
   </head>
   <body>
     <div class="flex flex-col">
+      <div class="top-display"></div>
       <div class="main flex flex-col">
-        <input type="text" id="input" />
-        <div class="row flex">
-          <button class="button btn-clear">AC</button>
-          <button class="button btn-clear">DEL</button>
-          <button class="button btn-opr">%</button>
-          <button class="button btn-opr">/</button>
+        <div id="input">
+          <div data-previous-operand class="data-previous-operand"></div>
+          <div data-current-operand class="data-current-operand"></div>
         </div>
         <div class="row flex">
-          <button class="button">7</button>
-          <button class="button">8</button>
-          <button class="button">9</button>
-          <button class="button btn-opr">*</button>
+          <button class="button btn-clear data-all-clear">AC</button>
+          <button class="button btn-clear data-delete">DEL</button>
+          <button class="button btn-opr data-operation" id="percentage">
+            %
+          </button>
+          <button class="button btn-opr data-operation">÷</button>
         </div>
         <div class="row flex">
-          <button class="button">4</button>
-          <button class="button">5</button>
-          <button class="button">6</button>
-          <button class="button btn-opr">-</button>
+          <button class="button data-number">7</button>
+          <button class="button data-number">8</button>
+          <button class="button data-number">9</button>
+          <button class="button btn-opr data-operation">*</button>
         </div>
         <div class="row flex">
-          <button class="button">1</button>
-          <button class="button">2</button>
-          <button class="button">3</button>
-          <button class="button btn-opr">+</button>
+          <button class="button data-number">4</button>
+          <button class="button data-number">5</button>
+          <button class="button data-number">6</button>
+          <button class="button btn-opr data-operation">-</button>
+        </div>
+        <div class="row flex">
+          <button class="button data-number">1</button>
+          <button class="button data-number">2</button>
+          <button class="button data-number">3</button>
+          <button class="button btn-opr data-operation">+</button>
         </div>
         <div class="row flex">
           <button class="button">0</button>
           <button class="button" id="sqrt">√</button>
           <button class="button">.</button>
-          <button class="button btn-equal">=</button>
+          <button class="button btn-equal data-equals">=</button>
         </div>
       </div>
     </div>
     <script type="text/javascript">
-      let buttons = Array.from(document.getElementsByClassName("button"));
-      let input = document.getElementById("input");
+      const currentOperandElement = document.querySelector(
+        ".data-current-operand"
+      );
+      const previousOperandElement = document.querySelector(
+        ".data-previous-operand"
+      );
+      const numberButtons = document.querySelectorAll(".data-number");
+      const operationButtons = document.querySelectorAll(".data-operation");
+      const equalsButton = document.querySelector(".data-equals");
+      const deleteButton = document.querySelector(".data-delete");
+      const allClearButton = document.querySelector(".data-all-clear");
+      const topDisplay = document.getElementsByClassName("top-display")[0];
+      let currentOperation;
+      console.log(topDisplay);
 
-      // Allow mouse click on the input field to focus on it
-      input.addEventListener("click", () => input.focus());
-      document.addEventListener("keydown", (e) => {
-        const key = e.key;
+      class Calculator {
+        constructor(previousOperandElement, currentOperandElement) {
+          this.previousOperandElement = previousOperandElement;
+          this.currentOperandElement = currentOperandElement;
+          this.clear();
+        }
 
-        // Check if the pressed key is a numeric key
-        if (/^\d$/.test(key)) {
-          input.value += key;
-        } else {
-          switch (key) {
-            case "Enter":
-              calculateResult();
-              break;
-            case "ArrowLeft":
-              moveCursor(-1);
-              break;
-            case "ArrowRight":
-              moveCursor(1);
-              break;
-            case "Backspace":
-              deleteCharacter();
-              break;
+        clear() {
+          this.previousOperand = "";
+          this.currentOperand = "";
+          this.operation = undefined;
+          topDisplay.innerText = "";
+        }
+
+        delete() {
+          this.currentOperand = this.currentOperand.toString().slice(0, -1);
+          this.updateDisplay();
+        }
+
+        appendNumber(input) {
+          const isDecimal = input === ".";
+          if (isDecimal && this.currentOperand.includes(".")) return;
+
+          // Update the current operand based on the input type
+          if (typeof input === "string") {
+            this.currentOperand = this.currentOperand.toString() + input;
+          } else if (typeof input === "number") {
+            this.currentOperand = this.currentOperand * 10 + input;
+          }
+
+          this.updateDisplay();
+        }
+
+        chooseOperation(operation) {
+          if (this.currentOperand === "") return;
+          if (this.previousOperand !== "") {
+            this.compute();
+          }
+          this.operation = operation;
+          this.previousOperand = this.currentOperand;
+          this.currentOperand = "";
+          currentOperation = operation;
+          topDisplay.innerText = this.previousOperand + currentOperation;
+        }
+
+        percentage() {
+          const current = parseFloat(this.currentOperand);
+          const prev = parseFloat(this.previousOperand);
+
+          if (isNaN(current) || isNaN(prev)) return;
+
+          switch (this.operation) {
             case "+":
             case "-":
+              this.currentOperand = (prev * current) / 100;
+              break;
             case "*":
-            case "/":
-              input.value += key;
+              this.currentOperand = prev * (current / 100);
+              break;
+            case "÷":
+              this.currentOperand = prev / (current / 100);
+              break;
+            default:
+              console.log("Invalid operation");
+              return;
+          }
+
+          this.operation = undefined;
+          this.previousOperand = "";
+          console.log("hello");
+          this.updateDisplay();
+        }
+
+        handleArrowKey(key) {
+          const inputElement = this.currentOperandElement;
+          const start = inputElement.selectionStart;
+          const end = inputElement.selectionEnd;
+
+          switch (key) {
+            case "ArrowLeft":
+              // Move left
+              inputElement.setSelectionRange(
+                Math.max(start - 1, 0),
+                Math.max(end - 1, 0)
+              );
+              break;
+            case "ArrowRight":
+              // Move right
+              inputElement.setSelectionRange(
+                Math.min(start + 1, inputElement.value.length),
+                Math.min(end + 1, inputElement.value.length)
+              );
               break;
             default:
               break;
           }
         }
-      });
 
-      buttons.forEach((button) =>
-        button.addEventListener("click", (e) => handleButtonClick(e))
+        compute() {
+          let computation;
+          const prev = parseFloat(this.previousOperand);
+          const current = parseFloat(this.currentOperand);
+          if (isNaN(prev) || isNaN(current)) return;
+          switch (this.operation) {
+            case "+":
+              computation = prev + current;
+              break;
+            case "-":
+              computation = prev - current;
+              break;
+            case "*":
+              computation = prev * current;
+              break;
+            case "÷":
+              computation = prev / current;
+              break;
+            default:
+              return;
+          }
+          this.currentOperand = computation;
+          this.operation = undefined;
+          this.previousOperand = "";
+        }
+
+        updateDisplay() {
+          this.currentOperandElement.innerText = this.currentOperand;
+        }
+
+        sqrt() {
+          const current = parseFloat(this.currentOperand);
+          if (isNaN(current)) return;
+          const result = Math.sqrt(current);
+          this.currentOperand = result;
+          this.operation = undefined;
+          this.updateDisplay();
+        }
+
+        handleEnterKey() {
+          this.compute();
+          this.updateDisplay();
+        }
+
+        // New method to handle clicking on display for keyboard input
+        handleDisplayClick() {
+          this.currentOperandElement.focus();
+        }
+
+        // New method to handle arrow keys for navigation
+      }
+
+      const calculator = new Calculator(
+        previousOperandElement,
+        currentOperandElement
       );
 
-      function handleButtonClick(e) {
-        let result = e.target.innerText.trim();
-        switch (result) {
-          case "AC":
-            input.value = "";
-            break;
-          case "DEL":
-            deleteCharacter();
-            break;
-          case "=":
-            calculateResult();
-            break;
-          default:
-            input.value += result;
-            break;
+      numberButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          calculator.appendNumber(button.innerText);
+          calculator.updateDisplay();
+        });
+      });
+
+      equalsButton.addEventListener("click", () => {
+        calculator.compute();
+        calculator.updateDisplay();
+      });
+
+      operationButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          calculator.chooseOperation(button.innerText);
+          calculator.updateDisplay();
+        });
+      });
+
+      allClearButton.addEventListener("click", () => {
+        calculator.clear();
+        calculator.updateDisplay();
+      });
+
+      deleteButton.addEventListener("click", () => {
+        calculator.delete();
+        calculator.updateDisplay();
+      });
+
+      document.getElementById("sqrt").addEventListener("click", () => {
+        calculator.sqrt();
+        calculator.updateDisplay();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculator.handleEnterKey();
         }
-      }
+      });
 
-      function calculateResult() {
-        try {
-          input.value = eval(input.value);
-        } catch (err) {
-          input.value = "Syntax Error";
+      // New event listener for clicking on the display
+      currentOperandElement.addEventListener("click", () => {
+        calculator.handleDisplayClick();
+      });
+
+      // New event listener for arrow keys
+      document.addEventListener("keydown", (event) => {
+        const arrowKeys = ["ArrowLeft", "ArrowRight"];
+        if (arrowKeys.includes(event.key)) {
+          calculator.handleArrowKey(event.key);
         }
-      }
+      });
 
-      function moveCursor(direction) {
-        const cursorPosition = input.selectionStart;
-        input.setSelectionRange(
-          cursorPosition + direction,
-          cursorPosition + direction
-        );
-      }
+      currentOperandElement.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculator.handleEnterKey();
+        }
+      });
 
-      function deleteCharacter() {
-        const cursorPosition = input.selectionStart;
-        input.value =
-          input.value.substring(0, cursorPosition - 1) +
-          input.value.substring(cursorPosition);
-        input.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
-      }
+      document.addEventListener("keydown", (event) => {
+        const key = event.key;
+        if (!isNaN(key) || key === ".") {
+          calculator.appendNumber(key);
+        }
+      });
+
+      document.getElementById("percentage").addEventListener("click", () => {
+        console.log("percentage clicked");
+        calculator.percentage();
+      });
+
+      // Event listener for percentage key (keyboard input)
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "%") {
+          calculator.percentage();
+        }
+      });
     </script>
   </body>
 </html>
